@@ -1,0 +1,16 @@
+{
+  "name": "cbt-api-dev-test",
+  "version": "0.1.0",
+  "description": "CBT api scaffolding for potential applicants to use for their technical skillz",
+  "main": "server/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "CBT Nuggets Services Team",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^5.0.1",
+    "express": "^4.16.3",
+    "superagent": "^3.8.3"
+  }
+}
