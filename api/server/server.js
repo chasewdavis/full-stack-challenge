@@ -57,13 +57,18 @@ app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
         whatsAvailable( models, packages );
 
         if(model_available && package_available){
+            //send order to acme
 
             request.post(`http://localhost:3050/acme/api/v45.1/order/${ACME_API_KEY}/${model}/${package}`)
                 .end( (err, acme_res) => {
-                    // console.log('err: ', err);
-                    console.log('acme_res: ', acme_res.text);
-                }) 
-                
+                // console.log('err: ', err);
+                console.log('acme_res: ', acme_res.text);
+
+
+
+
+            }) 
+
         } else {
             notAvailableResponse(model, package)
         }
@@ -75,12 +80,13 @@ app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
         whatsAvailable(models,packages);
 
         if(model_available && package_available){
+            // send order to rainier
+            
 
-            request.post(`http://localhost:3050/acme/api/v45.1/order/${ACME_API_KEY}/${model}/${package}`)
-                .end( (err, acme_res) => {
-                // console.log('err: ', err);
-                console.log('rainer_res: ', acme_res.text);
-                }) 
+
+
+
+
 
         } else {
             notAvailableResponse(model, package)
@@ -102,8 +108,8 @@ app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
 
         res.status(200).send({
             make: UNAVAILABLE,
-            model: model_available,
-            package: package_available
+            model: model_available || UNAVAILABLE,
+            package: package_available || UNAVAILABLE
         })
     }
 
