@@ -2,9 +2,9 @@
 const faker = require('faker');
 const _ = require('lodash');
 const { assert, expect } = require('chai')
-const postOrderCall = require('../src/data/data').postOrderCall;
+const { postOrderCall, getOrders } = require('../src/data/data')
 
-describe('Order', function(){
+describe.skip('Post Order', function(){
 
     describe('dynamic order', function(){
 
@@ -37,7 +37,7 @@ describe('Order', function(){
             
         })
 
-        for(let i = 0; i < 15; i++){
+        for(let i = 0; i < 50; i++){
 
             it('status code should equal 200', function(){
                 assert.equal(statusCode, 200);
@@ -103,3 +103,24 @@ describe('Order', function(){
     
 })
 
+describe('Get Order', function(){
+    describe('status', function(){
+
+        let status;
+
+        beforeEach(function(done){
+
+            getOrders().then( res => {
+                console.log('data is', res.data)
+                status = res.status
+                done();
+            })
+
+        })
+
+        it('status code should equal 200', function(){
+            assert.equal(status, 200);
+        })
+
+    })
+})
