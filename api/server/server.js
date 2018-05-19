@@ -86,6 +86,37 @@ app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
         res.status(200).send({make,model,package,customer_id});
     }
 
+    // rather than writing the same code twice
+    function saveAndSendOrder(supplierResponse){
+
+        // because order response is slightly different depending on the supplier
+        const order_id = supplierResponse.body.order || supplierResponse.body.order_id
+
+        // from client ( all valid inputs )
+        let ord = new Order;
+        ord.make = make;
+        ord.model = model;
+        ord.package = package;
+        ord.customer_id = customer_id;
+        // from supplier
+        ord.order_id = order_id
+        
+        ord.save(function(err, data){
+            if(err){
+                res.status(500).send('error saving to database: ', err)
+            } else {
+                res.status(200).send({
+                    make,
+                    model,
+                    package,
+                    customer_id,
+                    // from supplier
+                    order_id: ord.order_id * 1
+                })
+            }
+        })
+    }
+
     if(make === 'acme'){
 
         const { models, packages } = supplies.acme;
@@ -93,42 +124,17 @@ app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
         whatsAvailable( models, packages );
 
         if(model_available && package_available){
-            // save order in database
             // send order to acme
-            console.log('available')
-            
-
-
-
+            // save order in database
             request.post(`http://localhost:3050/acme/api/v45.1/order/${ACME_API_KEY}/${model}/${package}`)
-                .end( (err, acme_res) => {
-                // console.log('err: ', err);
-                // console.log('acme_res: ', acme_res.body.order);
+                .then( acme_res => {
+   
                 if(acme_res.status === 200){
-                    //save to database
-                    let ord = new Order;
-                    ord.make = make;
-                    ord.model = model;
-                    ord.package = package;
-                    ord.customer_id = customer_id;
-                    // from supplier
-                    ord.order_id = acme_res.body.order;
                     
-                    ord.save(function(err, data){
-                        if(err){
-                            res.status(500)
-                        } else {
-                            res.status(200).send({
-                                make,
-                                model,
-                                package,
-                                customer_id
-                            })
-                        }
-                    })
+                    saveAndSendOrder(acme_res);
 
                 }else{
-                    res.status(500);
+                    res.status(500).send('oops, looks like our server may need to update its api key');
                 }
 
             }) 
@@ -137,7 +143,7 @@ app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
             notAvailableResponse(model, package)
         }
 
-    } else if (make === 'rainier'){
+    } else if (make === 'rainier'){ 
 
         const { models, packages } = supplies.rainier;
 
@@ -145,23 +151,32 @@ app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
 
         if(model_available && package_available){
             // send order to rainier
-            
+            // first needs a token from rainier
+            const storefront = 'ccas-bb9630c04f';
+ 
+            request
+                .get(`http://localhost:3051/rainier/v10.0/nonce_token/${storefront}`)
+                .then( tokenResponse => {
 
+                    const { nonce_token } = tokenResponse.body
 
+                    request.post(`http://localhost:3051/rainier/v10.0/request_customized_model/${nonce_token}/${model}/${package}`)
+                    .then(rainier_res => {
 
+                        saveAndSendOrder(rainier_res);
 
-
+                    })
+                })
 
         } else {
             notAvailableResponse(model, package)
         }
 
     } else {
-        // the client requested for an unavailable supplier, but
-        // maybe the client chose a valid the model or package 
+        // the client requested for an unavailable supplier,
+        // but maybe the client chose a valid model or package
+        // help them find what they are looking for 
  
-        console.log('bad supplier')
-
         _.forIn(supplies, (val, key) => {
 
             if( val.models.includes(model) ){
@@ -176,7 +191,8 @@ app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
             make: UNAVAILABLE,
             model: model_available || UNAVAILABLE,
             package: package_available || UNAVAILABLE,
-            customer_id
+            customer_id,
+            order_id: UNAVAILABLE
         })
     }
 

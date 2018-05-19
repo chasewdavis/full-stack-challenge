@@ -4,21 +4,21 @@ const _ = require('lodash');
 const { assert, expect } = require('chai')
 const { postOrderCall, getOrders } = require('../src/data/data')
 
-describe.skip('Post Order', function(){
+describe('Post Order', function(){
 
     describe('dynamic order', function(){
 
         let statusCode;
 
         beforeEach(function(done){
-            // create a random order with valid properties some of the times
+            // create a random order with valid properties some of the time
             let makes = ['anvil', 'model', faker.random.word()];
             let make = makes[Math.floor(Math.random() * makes.length)];
             
             let models = ['pugetsound','olympic', 'anvil','wile','roadrunner', faker.random.word()];
             let model = models[Math.floor(Math.random() * models.length)];
 
-            let packages = ['std','super','elite', faker.random.word()];
+            let packages = ['std','super','elite', 'mtn', 'ltd', '14k', faker.random.word()];
             let package = packages[Math.floor(Math.random() * packages.length)];
 
             let id = faker.random.number()
@@ -37,7 +37,7 @@ describe.skip('Post Order', function(){
             
         })
 
-        for(let i = 0; i < 50; i++){
+        for(let i = 0; i < 30; i++){
 
             it('status code should equal 200', function(){
                 assert.equal(statusCode, 200);
@@ -75,27 +75,42 @@ describe.skip('Post Order', function(){
         
     });
 
-    describe('static order all valid for acme', function(){
+    describe('static order user input all valid for acme', function(){
         
         let order = { make:'acme', model:'anvil', package:'std', id:'12345' }
-        let response = {};
-        
+        let data = {};
+
         beforeEach(function(done){
             
             postOrderCall(order).then( res => {
-                response = res;
+                data = res.data;
                 done();
             })
             
         })
-
-        it('status 200', function(){
-            assert.equal(response.status, 200)
-        })
         
         it('object should equal', function(){
-            console.log(response.data)
-            assert.equal(response.data, { make:'acme', model:'anvil', package:'std', id:'12345' });
+            assert.isNumber(data.order_id);
+        })
+        
+    });
+
+    describe('static order user input all valid for rainer', function(){
+        
+        let order = { make:'rainier', model:'olympic', package:'mtn', id:'12345' }
+        let data = {};
+
+        beforeEach(function(done){
+            
+            postOrderCall(order).then( res => {
+                data = res.data;
+                done();
+            })
+            
+        })
+        
+        it('order_id is a number', function(){
+            assert.isNumber(data.order_id * 1);
         })
         
         
@@ -111,7 +126,6 @@ describe('Get Order', function(){
         beforeEach(function(done){
 
             getOrders().then( res => {
-                console.log('data is', res.data)
                 status = res.status
                 done();
             })

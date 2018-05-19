@@ -14,10 +14,11 @@ app.post('/acme/api/v45.1/order/:api_key/:model/:package', (req, res) => {
     const { api_key, model, package } = req.params;
 
     if(keys.includes(api_key)){
-        let fakeOrderNumber = Math.floor(Math.random() * 10000)
-        res.status(200).send({"order":fakeOrderNumber});
+        let fakeOrderNumber = Math.floor(Math.random() * 10000);
+        res.status(200).send({"order":`${fakeOrderNumber}`});
     }else{
-        res.status(400)
+        console.log('bad api key')
+        res.status(400).send('invalid api key')
     }
 
 })
