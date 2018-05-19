@@ -1,12 +1,18 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
+import { getOrders } from '../actions/index';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
 
 class Home extends Component {
-    render() {
+    
+    componentDidMount(){
+        this.props.getOrders();
+    }
 
-        // console.log('orders are:', this.props.orders)
+    render() {
 
         return (
             <div className="home padding-20">
@@ -35,4 +41,8 @@ function mapStateToProps({ orders }){
     return { orders }
 }
 
-export default connect(mapStateToProps)(Home);
+function mapDispatchToProps(dispatch){
+    return bindActionCreators({ getOrders }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

@@ -21,6 +21,32 @@ class Order extends Component {
         this.baseState = _.cloneDeep(this.state);
     }
 
+    componentWillReceiveProps(newProps){
+        let invalid_order = newProps.orders.filter( order => _.isNull(order.order_id))[0];
+
+        if(invalid_order === undefined){
+            // order saved to database
+
+            this.setState(this.baseState)
+            document.getElementById('order_flag').classList.add('show_success');
+            setTimeout( () => {
+                document.getElementById('order_flag').classList.remove('show_success')
+            },3000);
+        }else{
+            // order is invalid
+
+            let invalidFields = [];
+            _.forIn(invalid_order, (val, key) => {
+                if(val === false){
+                    invalidFields.push(key);
+                }
+            })
+            invalidFields.map( field => {
+                document.getElementById(field).classList.add('invalid');
+            })
+        }
+    }
+
     handleInputChange(event){
         this.setState({ [event.target.id]: event.target.value });
     }
@@ -49,12 +75,12 @@ class Order extends Component {
 
             this.props.postOrder( this.state );
 
-            this.setState(this.baseState)
+            // this.setState(this.baseState)
         }
     }
 
     removeClass(field){
-        document.getElementById(field).classList.remove('required');
+        document.getElementById(field).classList.remove('required', 'invalid');
     }
 
     render(){
@@ -62,6 +88,7 @@ class Order extends Component {
             <div className='order padding-20'>    
                 <header>
                     <Link to='/'> Home</Link>
+                    <div id='order_flag' className='order_success'>Order Saved</div>
                 </header>       
                 <form onSubmit={() => this.placeOrder()}>
                     <h2>Place a new order</h2>
@@ -92,8 +119,13 @@ class Order extends Component {
     }
 }
 
-function mapDispatchToProps(dispatch){
-    return bindActionCreators({ postOrder },dispatch)
+// check for invalid order ( order_id equals null )
+function mapStateToProps({orders}){
+    return { orders };
 }
 
-export default connect(null, mapDispatchToProps)(Order);
+function mapDispatchToProps(dispatch){
+    return bindActionCreators({ postOrder }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Order);
