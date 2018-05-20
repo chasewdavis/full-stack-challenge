@@ -73,9 +73,15 @@ class Order extends Component {
     placeOrder(){
         if(this.formIsComplete()){
 
-            this.props.postOrder( this.state );
+            // lowercase values on state without mutating state
 
-            // this.setState(this.baseState)
+            let clone = _.cloneDeep(this.state)
+
+            _.forIn( clone, (val, key) => {
+                clone[key] = val.toLowerCase()
+            })
+
+            this.props.postOrder( clone );
         }
     }
 
@@ -87,12 +93,15 @@ class Order extends Component {
         return (
             <div className='order padding-20'>    
                 <header>
-                    <Link to='/'> Home</Link>
+                    <Link to='/'>View All Orders</Link>
                     <div id='order_flag' className='order_success'>Order Saved</div>
                 </header>       
                 <form onSubmit={() => this.placeOrder()}>
                     <h2>Place a new order</h2>
 
+                    {/* Maybe this is overengineered? 
+                    The idea is that adding more inputs only involves 
+                    adding another key value pair to state*/}
                     {
                         _.keysIn(this.state).map( field => {
                             return (

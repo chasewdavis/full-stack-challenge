@@ -8,8 +8,6 @@ export function postOrder(order){
 
     const request = postOrderCall(order);  // promise can be easily tested in this format
 
-    console.log('request from action: ', request)
-
     return {
         type: POST_NEW_ORDER,
         payload: request
@@ -17,8 +15,6 @@ export function postOrder(order){
 }
 
 export function getOrders(){
-
-    console.log('get orders fired')
 
     const request = getOrdersCall();
 

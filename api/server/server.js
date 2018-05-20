@@ -47,6 +47,16 @@ app.get('/order', (req,res) => {
     })
 })
 
+// "download link for the order-$id.json file", unsure if this is what is needed
+app.get('/orderJSON/:order', (req, res) => {
+
+    const { order } = req.params;
+
+    Order.findOne({order_id: order}, (err, order) => {
+        err ? res.status(503) : res.status(200).send(order);
+    })
+
+})
 
 app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
 
