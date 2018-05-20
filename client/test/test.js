@@ -74,6 +74,10 @@ describe('Post Order', function(){
         })
 
         it('order_id should be null', function(){
+            assert.isNotString(response.order_id);
+        })
+
+        it('order_id should be null', function(){
             assert.isNotNumber(response.order_id);
         })
         
@@ -108,6 +112,11 @@ describe('Post Order', function(){
         it('order_id should be null', function(){
             // console.log('should be null', typeof data.order_id);
             assert.isNotNumber(data.order_id);
+        })
+
+        it('order_id should be null', function(){
+            // console.log('should be null', typeof data.order_id);
+            assert.isNotString(data.order_id);
         })
         
     });
