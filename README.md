@@ -8,16 +8,15 @@ project requirements, you may either (or both) directories.
 
 # Setup
 
-1) cd into the api directory,
+cd into the api directory,
   * npm install
-2) start all 3 backend servers in seperate terminal windows
+start all 3 backend servers in seperate terminal windows
   * node server/server.js
   * node acme/index.js
   * node rainier/index.js
-  ( nodemon works too! )
-3) cd into the client directory
+cd into the client directory
   * npm install
-4) start front end server
+start front end server
   * npm start
   * navigate to http://localhost:8080/#/
   
