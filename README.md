@@ -8,7 +8,7 @@ project requirements, you may either (or both) directories.
 
 # Setup
 
-cd into the api directory,
+cd into the api directory
   * npm install
   
 start all 3 backend servers in seperate terminal windows
@@ -22,5 +22,8 @@ cd into the client directory
 start front end server
   * npm start
   * navigate to http://localhost:8080/#/
+  
+For testing (from client directory)
+ * npm run test
   
 NOTE: Depending on your browser, you may have to enable CORS ( cross origin resourse sharing )
