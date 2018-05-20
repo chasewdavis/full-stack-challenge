@@ -10,12 +10,15 @@ project requirements, you may either (or both) directories.
 
 cd into the api directory,
   * npm install
+  
 start all 3 backend servers in seperate terminal windows
   * node server/server.js
   * node acme/index.js
   * node rainier/index.js
+  
 cd into the client directory
   * npm install
+  
 start front end server
   * npm start
   * navigate to http://localhost:8080/#/
