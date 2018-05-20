@@ -47,6 +47,16 @@ app.get('/order', (req,res) => {
     })
 })
 
+// "download link for the order-$id.json file", unsure if this is what is needed
+app.get('/orderJSON/:order', (req, res) => {
+
+    const { order } = req.params;
+
+    Order.findOne({order_id: order}, (err, order) => {
+        err ? res.status(503) : res.status(200).send(order);
+    })
+
+})
 
 app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
 
@@ -67,7 +77,7 @@ app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
 
     let model_available;
     let package_available;
-    const UNAVAILABLE = 'UNAVAILABLE';
+    // const UNAVAILABLE = 'UNAVAILABLE';
  
     function whatsAvailable(models, packages){
         if(models.includes(model)){
@@ -81,9 +91,9 @@ app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
     // client asked for valid make but invalid model and / or package
     // let client know what is not available
     function notAvailableResponse(model, package){
-        model = model_available ? model : UNAVAILABLE;
-        package = package_available ? package : UNAVAILABLE;
-        res.status(200).send({make,model,package,customer_id});
+        model = model_available ? model : false;
+        package = package_available ? package : false;
+        res.status(200).send({make,model,package,customer_id,order_id:null});
     }
 
     // rather than writing the same code twice
@@ -188,11 +198,11 @@ app.post('/order/:make/:model/:package/:customer_id', (req,res) => {
         })
 
         res.status(200).send({
-            make: UNAVAILABLE,
-            model: model_available || UNAVAILABLE,
-            package: package_available || UNAVAILABLE,
+            make: false,
+            model: model_available || false,
+            package: package_available || false,
             customer_id,
-            order_id: UNAVAILABLE
+            order_id: null
         })
     }
 

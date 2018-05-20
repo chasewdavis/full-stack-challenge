@@ -2,7 +2,7 @@
 const faker = require('faker');
 const _ = require('lodash');
 const { assert, expect } = require('chai')
-const { postOrderCall, getOrders } = require('../src/data/data')
+const { postOrderCall, getOrdersCall } = require('../src/data/data')
 
 describe('Post Order', function(){
 
@@ -47,7 +47,7 @@ describe('Post Order', function(){
 
     })
 
-    describe('static order invalid package', function(){
+    describe('acme invalid package', function(){
         
         let order = { make:'acme', model:'anvil', package:'ownvednd', id:'12344' }
         let response = {};
@@ -70,12 +70,58 @@ describe('Post Order', function(){
         })
         
         it('package should be unavailable', function(){
-            assert.equal(response.data.package, 'UNAVAILABLE');
+            assert.equal(response.data.package, false);
+        })
+
+        it('order_id should be null', function(){
+            assert.isNotString(response.order_id);
+        })
+
+        it('order_id should be null', function(){
+            assert.isNotNumber(response.order_id);
         })
         
     });
 
-    describe('static order user input all valid for acme', function(){
+    describe('acme invalid model', function(){
+        
+        let order = { make:'acme', model:'not_a_model', package:'super', id:'12344' }
+        let data = {};
+        
+        beforeEach(function(done){
+            
+            postOrderCall(order).then( res => {
+                data = res.data;
+                done();
+            })
+            
+        })
+        
+        it('make should be acme', function(){
+            assert.equal(data.make, 'acme');
+        })
+        
+        it('model should be false', function(){
+            assert.equal(data.model, false)
+        })
+        
+        it('package should be super', function(){
+            assert.equal(data.package, 'super');
+        })
+
+        it('order_id should be null', function(){
+            // console.log('should be null', typeof data.order_id);
+            assert.isNotNumber(data.order_id);
+        })
+
+        it('order_id should be null', function(){
+            // console.log('should be null', typeof data.order_id);
+            assert.isNotString(data.order_id);
+        })
+        
+    });
+
+    describe('all valid for acme', function(){
         
         let order = { make:'acme', model:'anvil', package:'std', id:'12345' }
         let data = {};
@@ -88,6 +134,10 @@ describe('Post Order', function(){
             })
             
         })
+
+        it('make should be acme', function(){
+            assert.equal(data.make, 'acme');
+        })
         
         it('object should equal', function(){
             assert.isNumber(data.order_id);
@@ -95,7 +145,7 @@ describe('Post Order', function(){
         
     });
 
-    describe('static order user input all valid for rainer', function(){
+    describe('all valid for rainer', function(){
         
         let order = { make:'rainier', model:'olympic', package:'mtn', id:'12345' }
         let data = {};
@@ -107,6 +157,10 @@ describe('Post Order', function(){
                 done();
             })
             
+        })
+
+        it('make is rainier', function(){
+            assert.equal(data.make, 'rainier')
         })
         
         it('order_id is a number', function(){
@@ -122,14 +176,20 @@ describe('Get Order', function(){
     describe('status', function(){
 
         let status;
+        let data;
 
         beforeEach(function(done){
 
-            getOrders().then( res => {
+            getOrdersCall().then( res => {
                 status = res.status
+                data = res.data
                 done();
             })
 
+        })
+
+        it('should be an array', function(){
+            assert.isArray(data)
         })
 
         it('status code should equal 200', function(){
